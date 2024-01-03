@@ -48,7 +48,7 @@ autocmd BufNewFile,BufRead *.cpp set filetype=cpp
 function! CompileAndRunWithInput()
   let fileName = expand('%')
   if fileName =~ '\.cpp$'
-    let exeName = substitute(fileName, '\.cpp$', '', '')
+    let exeName = 'output'
     execute 'w | !g++ -std=c++11 -Wall -Wextra -Wpedantic -O2 -o ' . exeName . ' ' . fileName
     if v:shell_error == 0
       let cmd = "x-terminal-emulator -e bash -c './" . exeName . " < input.txt; read -p \"Press enter to exit...\"'"
