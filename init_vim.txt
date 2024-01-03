@@ -1,0 +1,78 @@
+" Specify the plugin manager (Vim-Plug)
+call plug#begin('~/.local/share/nvim/plugged')
+
+" Add plugins here
+" Example plugins:
+Plug 'tpope/vim-fugitive'       " Git integration
+Plug 'scrooloose/nerdtree'      " File explorer
+Plug 'preservim/nerdcommenter'  " Commenting
+Plug 'jiangmiao/auto-pairs'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'npm ci'}
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'preservim/nerdcommenter'
+Plug 'tpope/vim-commentary'
+call plug#end()
+
+let g:coc_global_extensions = [
+      \ 'coc-snippets',
+      \ 'coc-highlight',
+      \ 'coc-emmet',
+      \ 'coc-yank',
+      \ 'coc-lists',
+      \ 'coc-json',
+      \ 'coc-tsserver',
+      \ 'coc-prettier',
+      \ 'coc-pyright',
+      \ 'coc-clangd',
+      \ ]
+
+" Basic settings
+set number           " Show line numbers
+set autoindent       " Enable auto-indentation
+set smartindent      " Enable smart indentation
+
+syntax on
+colorscheme desert
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set encoding=utf-8
+filetype plugin indent on
+" Set C++ file type
+autocmd BufNewFile,BufRead *.cpp set filetype=cpp
+ 
+" Compile and run C++ program with input from input.txt in subshell
+function! CompileAndRunWithInput()
+  let fileName = expand('%')
+  if fileName =~ '\.cpp$'
+    let exeName = substitute(fileName, '\.cpp$', '', '')
+    execute 'w | !g++ -std=c++11 -Wall -Wextra -Wpedantic -O2 -o ' . exeName . ' ' . fileName
+    if v:shell_error == 0
+      let cmd = "x-terminal-emulator -e bash -c './" . exeName . " < input.txt; read -p \"Press enter to exit...\"'"
+      call system(cmd)
+      redraw!
+    endif
+  else
+    echo 'Not a C++ file'
+  endif
+endfunction
+
+"Map keys to compile and run current file
+map <F5> :call CompileAndRunWithInput()<CR>
+map <F9> :w<CR>:!clear<CR>:call CompileAndRunWithInput()<CR>
+noremap <C-p> :FZF<CR>
+
+" Map gcc in visual mode to toggle comments using NERDCommenter
+vnoremap <silent> <leader>c :<C-U>call NERDComment(0, "toggle")<CR>
+
+" Custom key mapping to comment multiple lines in Visual mode with NERDCommenter
+vnoremap <leader>cm :<C-U>call NERDComment(0, 'toggle')<CR>
+
+" Map gc in normal mode to comment/uncomment using Vim Commentary
+nmap <silent> gc :<C-U>call Commentary(0)<CR>
+ 
+source ~/.config/nvim/coc.vim
+
