@@ -1,0 +1,6 @@
+# Ignore compiled C++ executables
+*.out
+*.exe
+*.app
+*.o
+
